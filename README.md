@@ -1,10 +1,9 @@
 # groovy-study-service
 
-## 1. 이 레포는 무엇인가
+## 1. Repo: groovy-study-service
 
 **Groovy**는 태그 기반으로 스터디 그룹을 매칭하고, 참여 신청/승인, 캘린더 일정 관리, 회고록 공유,
-실시간 알림까지 지원하는 스터디 커뮤니티 플랫폼입니다. 백엔드는 하나의 Spring Boot 모놀리스에서
-도메인별 마이크로서비스로 전환되었고, 지금은 서비스별 폴리레포로 분리되는 중입니다.
+실시간 알림까지 지원하는 스터디 커뮤니티 플랫폼입니다. 
 
 `groovy-study-service`는 그중 **스터디** 도메인을 담당하는 서비스입니다. 스터디 그룹 생성·수정·
 삭제, 참여 신청/승인/거절, 정원 초과 시 대기열, 태그 기반 매칭, 레벨/경험치 시스템을 담당하며,
@@ -72,14 +71,10 @@
 
 ## 6. 로컬 실행 방법
 
+컨테이너 빌드(빌드 컨텍스트는 레포 루트):
+
 ```bash
 # MySQL(study_db)·Kafka·identity-service가 떠 있는 상태에서
-./gradlew :services:study-service:bootRun
-```
-
-또는 컨테이너 빌드(빌드 컨텍스트는 레포 루트):
-
-```bash
 docker build -t groovy-study-service .
 docker run -p 8082:8082 \
   -e SPRING_DEV_DB_URL="jdbc:mysql://host.docker.internal:3306/study_db?..." \
@@ -89,18 +84,7 @@ docker run -p 8082:8082 \
   groovy-study-service
 ```
 
-이 레포 단독으로는 인프라(MySQL/Kafka)와 의존 서비스(identity-service)가 포함되어 있지 않습니다 — `groovy-infra` 레포가 아직 없는 과도기라 원본 Groovy 모노레포의 `docker-compose.local.yml`을 함께 띄우는 것을 전제로 합니다. 기본 포트는 `8082`입니다.
-
-## 7. 기존 모노레포에서 어느 부분을 떼온 것인지
-
-원본 모놀리스 `groovy/domain/study`(Application, StudyWaitlist 포함)가 출발점입니다.
-
-1. **1단계** — `backend/services/study-service/`로 이동하며 `UserRepository` 직접 접근을 `UserService` 공개 API 호출로 정리했고, 도메인 경계 재검토에서 `StudyTag`(스터디-태그 매핑)는 study-service 소유로 남기고 `UserTag`(선호 태그)만 identity-service로 넘겼습니다.
-2. **2단계** — `backend/services/study-service/`와 5개 공용 라이브러리(`event-contract`/`observability`/`web-common`/`security-common`/`client-common`)를 전부 복사해 이 레포를 구성했습니다. `event-contract`는 study-service가 실제로 발행하는 `EventEnvelope` + `NotificationPayload`만 포함하고, 미사용 초안 payload(`StudyApplicationSubmittedPayload` 등)는 제외했습니다.
-
-상세 이관 기록은 원본 레포의 `docs/transfer/groovy-study-service.md`를 참고하세요.
-
-## 8. 모니터링 스택에서 관측되는 부분
+## 7. 모니터링 스택에서 관측되는 부분
 
 - **Prometheus**: `job=study-service`로 `:8082/actuator/prometheus` 15초 스크래핑. HikariCP 커넥션 풀 지표가 서비스 단위로 분리 수집됩니다.
 - **Alertmanager**: HikariCP pending 발생, JVM 힙 40% 초과, CPU 95% 초과 알림 규칙 적용.
