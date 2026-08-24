@@ -35,6 +35,7 @@ public class TagPreferenceClient {
 	private final ResilientCallExecutor executor;
 
 	public TagPreferenceClient(
+		RestClient.Builder restClientBuilder,
 		@Value("${identity-service.url:http://identity-service:8081}") String identityServiceUrl,
 		@Value("${identity-service.connect-timeout-ms:2000}") long connectTimeoutMs,
 		@Value("${identity-service.read-timeout-ms:3000}") long readTimeoutMs
@@ -45,7 +46,7 @@ public class TagPreferenceClient {
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
 		requestFactory.setReadTimeout(Duration.ofMillis(readTimeoutMs));
 
-		this.restClient = RestClient.builder()
+		this.restClient = restClientBuilder
 			.baseUrl(identityServiceUrl)
 			.requestFactory(requestFactory)
 			.build();
