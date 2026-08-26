@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.web.client.RestClient;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 
@@ -49,7 +51,7 @@ class TagPreferenceClientContractTest {
 		));
 		int port = startStubServer(responseJson, 200);
 
-		TagPreferenceClient client = new TagPreferenceClient("http://localhost:" + port, 2000, 3000);
+		TagPreferenceClient client = new TagPreferenceClient(RestClient.builder(), "http://localhost:" + port, 2000, 3000);
 
 		List<Long> tagIds = withAuthorizationHeader(() -> client.getMyPreferredTagIds());
 
@@ -58,7 +60,7 @@ class TagPreferenceClientContractTest {
 
 	@Test
 	void identity_service가_죽어있으면_예외_대신_빈_목록을_반환한다() throws Exception {
-		TagPreferenceClient client = new TagPreferenceClient("http://localhost:1", 200, 200);
+		TagPreferenceClient client = new TagPreferenceClient(RestClient.builder(), "http://localhost:1", 200, 200);
 
 		List<Long> tagIds = withAuthorizationHeader(() -> client.getMyPreferredTagIds());
 
