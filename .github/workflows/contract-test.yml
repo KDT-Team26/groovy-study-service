@@ -10,6 +10,7 @@ on:
   pull_request:
     branches:
       - dev
+      - main
 
 permissions:
   contents: read
@@ -33,4 +34,8 @@ jobs:
           java-version: '21'
 
       - name: Run identity-service client contract tests
-        run: ./gradlew test --tests "*ContractTest" --no-daemon
+        run: ./gradlew test --tests "*ContractTest" --tests "*TracePropagationTest" --no-daemon
+        env:
+          # groovy-common(공통 모듈)을 GitHub Packages 에서 내려받기 위한 인증
+          GITHUB_ACTOR: ${{ github.actor }}
+          GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
