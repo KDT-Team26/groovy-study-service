@@ -24,7 +24,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.groovy.backend.study.config.TracingConfig;
+import com.groovy.backend.observability.TracingConfig;
 import com.sun.net.httpserver.HttpServer;
 
 /**
